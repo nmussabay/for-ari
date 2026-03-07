@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Surprise for Ari</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <style>
+        :root {
+            --primary-bg: #2d2444; 
+            --accent-gold: #d4af37; 
+            --text-light: #f3efff;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-light);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .click-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 20px;
+            animation: heartExplode 0.8s ease-out forwards;
+        }
+
+        @keyframes heartExplode {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
+        }
+
+        .music-control {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            background: rgba(212, 175, 55, 0.2); border: 1px solid var(--accent-gold);
+            color: var(--accent-gold); padding: 10px; border-radius: 50%; cursor: pointer;
+        }
+
+        .step { display: none; animation: fadeIn 0.8s ease-in-out; width: 100%; padding: 20px; box-sizing: border-box; }
+        .active { display: block; }
+
+        h1 { font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 10px; }
+        
+        #step1 h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+        #step1 p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        /* Увеличенный текст для финального слайда */
+        #step6 h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+        #step6 p {
+            font-size: 1.8rem;
+            line-height: 1.4;
+        }
+
+        .btn {
+            background-color: var(--accent-gold); color: #2d2444; border: none;
+            padding: 15px 35px; font-size: 1rem; font-weight: bold; border-radius: 30px;
+            cursor: pointer; margin-top: 25px; transition: 0.3s; text-transform: uppercase;
+        }
+
+        .swiper { width: 100%; max-width: 1100px; padding: 50px 0; }
+        .swiper-slide {
+            width: 280px; height: 380px;
+            position: relative; border-radius: 20px; overflow: hidden;
+            border: 2px solid var(--accent-gold); background: #000;
+        }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .slide-content {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: white; font-style: italic; font-size: 1.1rem;
+        }
+        .swiper-slide:not(.swiper-slide-active) { opacity: 0.3; transform: scale(0.85); }
+
+        .photo-grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 600px; margin: 30px auto; }
+        .photo-grid-3x3 img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-gold); }
+
+        .letter-box {
+    background: #fffef0; 
+    color: #444; 
+    padding: 40px; 
+    border-radius: 2px;
+    text-align: left; 
+    box-shadow: 
+        2px 2px 10px rgba(0,0,0,0.1),
+        0 0 50px rgba(212, 175, 55, 0.1) inset; 
+    max-width: 500px; 
+    margin: 0 auto; 
+    display: none; 
+    position: relative;
+    line-height: 1.8;
+    border-left: 5px solid var(--accent-gold); 
+}
+
+
+.letter-cursive {
+    font-family: 'Dancing Script', cursive;
+    color: #8b6d11; 
+}
+
+        #secret-photo {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 200; background: white; padding: 10px; border-radius: 10px; box-shadow: 0 0 50px #000;
+        }
+
+        .wish-board {
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 15px; 
+            margin: 20px auto; 
+            max-width: 900px;
+        }
+        .wish-item {
+            background: rgba(212, 175, 55, 0.1); border: 2px solid var(--accent-gold);
+            border-radius: 15px; 
+            height: 140px; 
+            display: flex; align-items: center;
+            justify-content: center; cursor: pointer; transition: 0.5s; padding: 10px;
+        }
+        .wish-item.revealed { background: var(--accent-gold); color: #2d2444; }
+        .wish-icon { font-size: 45px; }
+        .wish-text { 
+            display: none; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            line-height: 1.2; 
+        }
+        .wish-item.revealed .wish-icon { display: none; }
+        .wish-item.revealed .wish-text { display: block; animation: fadeIn 0.5s; }
+
+        .emoji-big { font-size: 80px; margin: 20px 0; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body onmousedown="createHearts(event)">
+
+    <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
+    <button class="music-control" onclick="toggleMusic()">🎵</button>
+
+    <div id="secret-photo" onclick="this.style.display='none'">
+        <p style="color: black; margin: 5px;">Bruh</p>
+        <img src="secret.jpg" style="max-width: 280px; border-radius: 5px;">
+    </div>
+
+    <div id="step1" class="step active">
+        <h1>Happy Birthday, Ari! ✨</h1>
+        <p>Ready for a little journey?</p>
+        <button class="btn" style="padding: 20px 50px; font-size: 1.3rem;" onclick="nextStep(2)">Let's go!</button>
+    </div>
+
+    <div id="step2" class="step">
+        <h1>Make a wish...</h1>
+        <div class="emoji-big" id="candle" onclick="blowOut()">🎂<br><span id="fire" style="font-size: 30px;">🕯️</span></div>
+        <p id="instruction">Click on the candle!</p>
+        <button id="afterBlowBtn" class="btn" style="display:none;" onclick="nextStep(3)">Continue</button>
+    </div>
+
+    <div id="step3" class="step">
+        <h1>A Letter for You 💌</h1>
+        <div class="emoji-big" id="env" onclick="openLetter()">✉️</div>
+        <div class="letter-box" id="letter">
+            <p class="letter-cursive" style="font-size: 2.2rem; margin-bottom: 20px;">
+        Dearest Ari,
+    </p>
+
+    <p style="font-size: 1.1rem; margin-bottom: 25px; text-align: justify;">
+        Congratulations on joining the ranks of sixteen, my lovely dear! 
+        I remember how we discussed how we wanted a group of friends, 
+        someone with a private house where we could spend time, and it came true, 
+        and I'm still immensely grateful for that. <br><br>
+        
+        I incredibly appreciate all the time we spent together and the invaluable experience 
+        I gained during our friendship. I want you to always be delighted by the people around you. 
+        I hope your practice will be easy and joyful. And most importantly, good relationships 
+        with your family and your health. <br><br>
+        
+        Come on, post your dance practices more often, I'm ready to write hooks.
+    </p>
+
+    <p class="letter-cursive" style="font-size: 1.8rem; text-align: right; margin-top: 30px;">
+        With love, <br>
+        <span style="font-size: 2.5rem;">Nuray</span>
+    </p>
+
+            <span style="position:absolute; bottom:10px; right:10px; cursor:pointer; color:#ddd;" onclick="showSecret()">★</span>
+        </div>
+        <button id="toRememberBtn" class="btn" style="display:none;" onclick="nextStep(4)">Remember when...?</button>
+    </div>
+
+    <div id="step4" class="step">
+        <h1>Remember when...</h1>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img src="obossanie.jpg"><div class="slide-content">We laughed until it obossanie?</div></div>
+                <div class="swiper-slide"><img src="wife.jpg"><div class="slide-content">Your one and only wife?</div></div>
+                <div class="swiper-slide"><img src="top.jpg"><div class="slide-content">How you are always on top?</div></div>
+                <div class="swiper-slide"><img src="tough.jpg"><div class="slide-content">The inside joke only we know(tough case)?</div></div>
+                <div class="swiper-slide"><img src="were.jpg"><div class="slide-content">You were there for me?</div></div>
+            </div>
+        </div>
+        <button class="btn" onclick="nextStep('4_5')">Next Surprise ✨</button>
+    </div>
+
+    <div id="step4_5" class="step">
+        <h1>My Wishes for You ✨</h1>
+        <div class="wish-board">
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">✈️</div><div class="wish-text">Endless new travels!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">💰</div><div class="wish-text">Big success & wealth!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">💖</div><div class="wish-text">Love and be loved!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">🎀</div><div class="wish-text">Vogue-style every day!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">🌟</div><div class="wish-text">Shine bright always!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">🎶</div><div class="wish-text">Find freedom in dance!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">📸</div><div class="wish-text">New camera, new stories!</div></div>
+            <div class="wish-item" onclick="revealWish(this)"><div class="wish-icon">🧸</div><div class="wish-text">More 3 AM secrets!</div></div>
+        </div>
+        <button class="btn" onclick="nextStep(5)">Our Memories 📸</button>
+    </div>
+
+    <div id="step5" class="step">
+        <h1>Moments Together</h1>
+        <div class="photo-grid-3x3">
+            <img src="ontop.jpg"><video autoplay muted loop style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-gold);">
+        <source src="video.mp4" type="video/mp4">
+    </video><img src="p3.jpg">
+            <video autoplay muted loop style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-gold);">
+        <source src="video1.mp4" type="video/mp4"></video>
+		<img src="p5.jpg">
+		<video autoplay muted loop style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-gold);">
+        <source src="video2.mp4" type="video/mp4"></video>
+            <img src="p7.jpg"><video autoplay muted loop style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-gold);">
+        <source src="video3.mp4" type="video/mp4"></video><img src="p9.jpg">
+        </div>
+        <button class="btn" onclick="nextStep(6)">Final Gift</button>
+    </div>
+
+    <div id="step6" class="step">
+        <h1>Hooray! 🎉</h1>
+        <p> May this day be as bright as the girl born on it!</p>
+        <div class="emoji-big">🥳 🥂 💖</div>
+        <button class="btn" onclick="location.reload()">Replay</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+        function createHearts(e) {
+            const hearts = ['💖', '💝', '✨', '🌸', '💕'];
+            for (let i = 0; i < 6; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'click-heart';
+                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = e.clientX + 'px';
+                heart.style.top = e.clientY + 'px';
+                const tx = (Math.random() - 0.5) * 200 + 'px';
+                const ty = (Math.random() - 0.5) * 200 + 'px';
+                heart.style.setProperty('--tx', tx);
+                heart.style.setProperty('--ty', ty);
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 800);
+            }
+        }
+
+        const swiper = new Swiper(".mySwiper", {
+            effect: "coverflow", grabCursor: true, centeredSlides: true,
+            slidesPerView: "auto", observer: true, observeParents: true,
+            coverflowEffect: { rotate: 0, stretch: 0, depth: 100, modifier: 2.5, slideShadows: false },
+            loop: true,
+        });
+
+        function nextStep(n) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+            if(n === 4) setTimeout(() => { swiper.update(); }, 100);
+            if(n === 6) launchConfetti();
+            window.scrollTo(0,0);
+        }
+
+        function blowOut() {
+            document.getElementById('fire').innerHTML = "💨";
+            document.getElementById('instruction').innerText = "May your wish come true, my Poppins!";
+            document.getElementById('afterBlowBtn').style.display = "inline-block";
+        }
+
+        function openLetter() {
+            document.getElementById('env').style.display = "none";
+            document.getElementById('letter').style.display = "block";
+            document.getElementById('toRememberBtn').style.display = "inline-block";
+        }
+
+        function revealWish(el) { el.classList.toggle('revealed'); }
+
+        function showSecret() { document.getElementById('secret-photo').style.display = 'block'; }
+        
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            return music.paused ? music.play() : music.pause();
+        }
+
+        function launchConfetti() {
+            if (typeof confetti === 'undefined') return;
+            var end = Date.now() + 3000;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#d4af37', '#ffffff'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#d4af37', '#ffffff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+    </script>
+</body>
+</html>
